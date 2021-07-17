@@ -1,0 +1,57 @@
+//------------------------------------------------
+//--- 010 Editor v7.0.2 Binary Template
+//
+//      File: 
+//   Authors: Vairelt
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+struct SiemensUpd{
+    struct CompressedObjhdr{
+        uint32 size;
+        uint32 CRC;
+        char name[6];
+    };
+
+    struct UpdHeader{
+        uint32 objCount;
+        uint32 unused[2];
+        char FirmwareName[32];
+        CompressedObjhdr obj[objCount];
+    };
+
+    struct lzp3_chunk{
+        uint32 chunk_size;
+        uint16 paddSize;
+        char plainText[4];
+        char data[chunk_size-6]; 
+    };
+
+    struct lzp3_chunks{
+        local uint32 chunks_count = 0;
+        local uint32 obj2size = hdr.obj[1].size;
+        
+        while( obj2size>0 ){
+            lzp3_chunk chunks <optimize=false>;
+            obj2size -= (chunks[chunks_count].chunk_size+4);
+            chunks_count++;
+        };
+    };
+
+    UpdHeader hdr;
+    char name1[6];
+    char obj1[hdr.obj[0].size] <name=name1>;
+    char name2[6];
+    lzp3_chunks chunks <optimize=false>;
+    char name3[6];
+    char obj3[hdr.obj[2].size];
+    char name4[6];
+    char obj4[hdr.obj[3].size];
+};
+
+SiemensUpd upd;
